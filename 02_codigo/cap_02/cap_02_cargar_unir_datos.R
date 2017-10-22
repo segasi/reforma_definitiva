@@ -43,7 +43,8 @@ gwf <- read_excel("01_datos/cap_02/gwf.xlsx",
 
 # Además de generar este subconjunto, hago dos cambios a la base de datos original de GWF: 1) reclasifico el régimen de Sudáfrica como "party" (GWF lo clasifican como "oligarchy") para incluirlo en la base de datos. 2) Cambio la fecha del principio del régimen de partido dominante de México a 1929 (originalmente codificado en 1915) porque es entonces cuando se fundó el Partido Nacional Revolucionario (PNR), predecesor del PRI.
 
-gwfsp <- gwf %>% mutate(gwf.regimetype = ifelse(gwf.country == "South Africa" & gwf.regimetype == "oligarchy", "party", gwf.regimetype), #  Reclasifciar a Sudáfrica como régimen "party"
+gwfsp <- gwf %>% 
+  mutate(gwf.regimetype = ifelse(gwf.country == "South Africa" & gwf.regimetype == "oligarchy", "party", gwf.regimetype), #  Reclasifciar a Sudáfrica como régimen "party"
                gwf.casename = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", "Mexico 29-00", gwf.casename), # Cambiar nombre del caso de México
                gwf.spell = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", 71, gwf.spell),  # Cambiar duración total del régimen priísta
                gwf.duration = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", gwf.duration-14, gwf.duration)) %>%    # Cambiar contador de años acumulados del régimen priísta)
@@ -51,17 +52,10 @@ gwfsp <- gwf %>% mutate(gwf.regimetype = ifelse(gwf.country == "South Africa" & 
 
 # Generar gwfsp09
 
-# Nuevo data frame construido a partir de gwfsp pero que sólo incluye las observaciones entre 1946 y 2009
-gwfsp09 <- gwfsp %>% 
-  filter(year < 2010) 
+  
 
 
-## Datos de Penn World Table (PWT) ----
-
-# Vesión 5.6
-pwt5.6 <- read.csv("01_datos/cap_02/PWT_5.6.csv", na.strings="NA")
-
-# Veersión 7.0
+## Datos de Penn World Table (PWT) 7.0 ----
 pwt7.0_original <- read.csv("01_datos/cap_02/PWT_7.0.csv", na.strings="NA", header = TRUE, dec = ".", sep =",")
 
 # Renombrar países y calcular diversas variables: 1) Valor rezagado de gdppc; 2) cambio anual de gdppc; 3) cambio anual de gdppc rezagado entre 1 y 11 períodos; 4) Desviación del valor anula del cambio del gdppc respecto al promedio de los últimos 5 a 10 años
