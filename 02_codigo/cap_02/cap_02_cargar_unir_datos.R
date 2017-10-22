@@ -199,8 +199,9 @@ missmap(u3[u3$gwf.country == "Germany East",], col = c("#c04d50","#4f81bd"), mai
 missmap(u3[u3$gwf.country == "Korea North",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
 missmap(u3[u3$gwf.country == "South Yemen",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
 
-## Guardar data frame u3 como sp para usarla en el análisis
+## Guardar data frame u3 como sp para usarla en el análisis y guardar archivo .csv
 sp <- u3
+write_csv(sp, "03_datos_generados/sp.csv")
 
 # Generar archivo con terminación .dta para llevar a cabo el análisis de los modelos de supervivencia en STATA (ver código incluido en el mismo folder que este archivo)
 sp_dta <- sp %>% 
