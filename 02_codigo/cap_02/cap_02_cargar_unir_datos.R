@@ -24,6 +24,7 @@ p_load(Amelia,
 
 ### Importar y procesar datos ----
 
+
 ## Datos de Geddes, Wright y Franz (GWF) ----
 
 # Cargar base de datos gwf.xlx. Esta base de datos incluye todos los regíemenes incluidos en la base de datos de GWF para el período 1945-2010
@@ -34,6 +35,7 @@ gwf <- read_excel("01_datos/cap_02/gwf.xlsx",
                                 "numeric", "numeric", "numeric", 
                                 "numeric", "numeric", "numeric", 
                                 "numeric", "text", "numeric"))
+
 
 # Generar gwfsp  
 
@@ -130,6 +132,7 @@ mad <- mad %>%
   rename(mad.gdppc = gdppc) %>% 
   group_by(mad.country) %>%
   mutate(mad.gdppcL1 = lag(mad.gdppc), # Valor de gdppc rezagado 1 año
+         mad.gdppcL1.log = log(mad.gdppcL1), # Logaritmo natural Valor de mad.gdppcL1 rezagado 1 año
          mad.chgdppc = ((mad.gdppc - mad.gdppcL1)/mad.gdppcL1)*100, # Cambio porcentual anual de gdppc
          mad.chgdppcL1 = lag(mad.chgdppc),    # Cambio porcentual anual rezagado 1 año
          mad.chgdppcL2 = lag(mad.chgdppc, 2), # Cambio porcentual anual rezagado 2 años
@@ -160,31 +163,37 @@ mad <- mad %>%
 
 
 ## Datos de precios de gas y petróleo de Ross ----
-ross_original <- read_csv("01_datos/cap_02/Ross_Oil_Gas_value_2009.csv")
+ross_original <- read_dta("01_datos/cap_02/Ross Oil & Gas 1932-2009 public.dta")
 
-# Renombrar variable y países
+# Seleccionar variables, renombrar variable y renombrar países
 ross <- ross_original %>% 
-  rename(ross.country = cty_name) %>% # Renombrar columna del país
-  mutate(ross.country = ifelse(ross.country == "Congo, Rep.", "Congo-Brz", ifelse(ross.country == "Cote d'Ivoire", "Ivory Coast", ifelse(ross.country == "Egypt, Arab Rep.", "Egypt", ifelse(ross.country == "Gambia, The", "Gambia", ifelse(ross.country == "Guinea-Bissau", "Guinea Bissau", ifelse(ross.country == "Iran, Islamic Rep.", "Iran", ifelse(ross.country == "Lao PDR", "Laos", ifelse(ross.country == "Korea, Dem. Rep.", "Korea North", ifelse(ross.country == "Syrian Arab Republic", "Syria", ifelse(ross.country == "Russian Federation", "Soviet Union", ifelse(ross.country == "Yugoslavia, Fed. Rep.", "Yugoslavia", ross.country))))))))))))
+  select(cty_name, year, oil_gas_valuePOP_2009) %>% 
+  rename(ross.country = cty_name, # Renombrar columna del país
+         ross.year = year,
+         ross.precio = oil_gas_valuePOP_2009) %>%  # Renombrar columna de variable relevante
+  mutate(ross.precioL1 = lag(ross.precio), # Rezagar ross.precio un año
+         ross.precioL1.log = log(ross.precioL1 + 1), # Logaritmo de la versión rezagada de ross.precio
+         ross.country = ifelse(ross.country == "Congo, Rep.", "Congo-Brz", ifelse(ross.country == "Cote d'Ivoire", "Ivory Coast", ifelse(ross.country == "Egypt, Arab Rep.", "Egypt", ifelse(ross.country == "Gambia, The", "Gambia", ifelse(ross.country == "Guinea-Bissau", "Guinea Bissau", ifelse(ross.country == "Iran, Islamic Rep.", "Iran", ifelse(ross.country == "Lao PDR", "Laos", ifelse(ross.country == "Korea, Dem. Rep.", "Korea North", ifelse(ross.country == "Syrian Arab Republic", "Syria", ifelse(ross.country == "Russian Federation", "Soviet Union", ifelse(ross.country == "Yugoslavia, Fed. Rep.", "Yugoslavia", ross.country))))))))))))
 ### Unir data frames ----
 
 # Unión 1
 u1 <- gwfsp %>% 
-  left_join(pwt7.0, by= c("gwf.country" = "pwt7.country", "year" = "year") )
+  left_join(pwt7.0, by= c("gwf.country" = "pwt7.country", "year" = "year"))
 
 # Unión 2
 u2 <- u1 %>% 
   left_join(mad, by= c("gwf.country" = "mad.country", "year" = "year"))
 
-# Unión 3
+# Unión 3 - En esta unión aparece una advertencia porque la base de datos de Ross llega hasta 2009, mientras que la de GWF llega hasta 2010
 u3 <- u2 %>% 
-  left_join(ross, by= c("gwf.country" = "ross.country", "year" = "year") )
+  left_join(ross, by= c("gwf.country" = "ross.country", "year" = "ross.year"))
 
 # Comparación de dimensiones
 dim(gwfsp)
 dim(u1)
 dim(u2)
 dim(u3)
+
 
 ## Mapas de observaciones faltantes por renglón. Nota: las columnas y renglones están ordendos en el orden inverso al del data frame.
 
@@ -208,5 +217,3 @@ sp_dta <- sp %>%
   rename_(.dots=setNames(names(.), tolower(gsub("\\.", "_", names(.)))))
 
 write_dta(sp_dta, "03_datos_generados/sp.dta", version = 12)
-
-
