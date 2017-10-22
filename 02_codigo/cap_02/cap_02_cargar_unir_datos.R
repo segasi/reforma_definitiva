@@ -2,7 +2,11 @@
 # install.packages("pacman") En caso de no tener el paquete pacman instalado
 library(pacman)
 p_load(readxl,
-       tidyverse
+       stringr,
+       survival,
+       tidyr,
+       tidyverse,
+       zoo
        # Amelia, 
        # car, 
        # effects, 
@@ -30,43 +34,102 @@ gwf <- read_excel("01_datos/cap_02/gwf.xlsx",
                                 "numeric", "numeric", "numeric", 
                                 "numeric", "text", "numeric"))
 
-# Generar gwfsp. Este nuevo data frame sólo incluye 
+# Generar gwfsp  
 
-Ésta es un subconjunto de la base de datos original de Geddes, Wright y Franz qu corresponde a las observaciones de los regímenes que ellos clasifican como party, party-military, party-person 
+# Este nuevo data frame es un subconjunto de la base de datos original y sólo incluyelas observaciones de los regímenes que ellos clasifican como party, party-military, party-military-personal y party-personal. 
 
-#######
-### Loads GWF SP from 1945 to 2010 , that is the part of the GWF 
-### data set that corresponds to single-party regimes (previously divided 
-### using Excel) 
-#######
+# Además de generar este subconjunto, hago dos cambios a la base de datos original de GWF: 1) reclasifico el régimen de Sudáfrica como "party" (GWF lo clasifican como "oligarchy") para incluirlo en la base de datos. 2) Cambio la fecha del principio del régimen de partido dominante de México a 1929 (originalmente codificado en 1915) porque es entonces cuando se fundó el Partido Nacional Revolucionario (PNR), predecesor del PRI.
 
-gwfsp <- read.csv("/Users/segasi/Documents/Google/UCLA/Personal_Research/Regime_survival/Data/GWF Global Regimes/gwfparty.csv",na.strings="NA")
+gwfsp <- gwf %>% mutate(gwf.regimetype = ifelse(gwf.country == "South Africa" & gwf.regimetype == "oligarchy", "party", gwf.regimetype), #  Reclasifciar a Sudáfrica como régimen "party"
+               gwf.casename = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", "Mexico 29-00", gwf.casename), # Cambiar nombre del caso de México
+               gwf.spell = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", 71, gwf.spell),  # Cambiar duración total del régimen priísta
+               gwf.duration = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", gwf.duration-14, gwf.duration)) %>%    # Cambiar contador de años acumulados del régimen priísta)
+  filter(str_detect(gwf.regimetype, "party")) # Filtrar datos para solo mantener observaciones de regímenes de partido dominante
 
+# Generar gwfsp09
 
-#######
-### Loads GWF SP from 1945 to 2009 (EXCLUDING 2010), that is the part of the GWF 
-### data set that corresponds to single-party regimes (previously divided 
-### using Excel) 
-#######
-
-gwfsp09 <- read.csv("/Users/segasi/Documents/Google/UCLA/Personal_Research/Regime_survival/Data/GWF Global Regimes/gwfparty09.csv",na.strings="NA")
-
-#######
-### Loads PWT 5.6 data set
-#######
-
-pwt5.6 <- read.csv("/Users/segasi/Documents/Google/UCLA/Personal_Research/Regime_survival/Data/Penn Tables/PWT 5.6.csv", na.strings="NA")
-
-#######
-### Loads PWT 7.0 data set
-#######
-
-pwt7.0 <- read.csv("/Users/segasi/Documents/Google/UCLA/Personal_Research/Regime_survival/Data/Penn Tables/PWT 7.0.csv", na.strings="NA", header = TRUE, dec = ".", sep =",")
+# Nuevo data frame construido a partir de gwfsp pero que sólo incluye las observaciones entre 1946 y 2009
+gwfsp09 <- gwfsp %>% 
+  filter(year < 2010) 
 
 
-#######
-### Loads Maddison data set
-#######
+## Datos de Penn World Table (PWT) ----
+
+# Vesión 5.6
+pwt5.6 <- read.csv("01_datos/cap_02/PWT_5.6.csv", na.strings="NA")
+
+# Veersión 7.0
+pwt7.0 <- read.csv("01_datos/cap_02/PWT_7.0.csv", na.strings="NA", header = TRUE, dec = ".", sep =",")
+
+
+## Datos de Maddison ----
+mad_original <- read_excel("01_datos/cap_02/Maddison - Eco Indicators 1500-2008.xls", sheet = "PerCapita GDP", range = "A3:GR194")
+
+# Renombrar variable, eliminar columnas vacías, renombrar países y eliminar datos de categorias reguionales incluidas en la base de datos original
+mad <- mad_original %>% 
+  rename(country = X__1) %>% # Renombrar columna del país
+  select(country, which(sapply(.,class)=="numeric")) %>%  # Eliminar columnas vacías en la base de datos
+  mutate(country = ifelse(country == "Total Former USSR", "USSR", ifelse(country == "Indonesia (including Timor until 1999)", "Indonesia", ifelse(country == "Congo 'Brazzaville'", "Congo-Brz", ifelse(country == "Côte d'Ivoire", "Ivory Coast", ifelse(country == "North Korea", "Korea North", ifelse(country == "Serbia/Montenegro/Kosovo", "Serbia", ifelse(country == "USSR", "Soviet Union", country)))))))) %>%  # Renombrar países
+  filter(!country %in% c("15 Latin American countries", "15 West Asian countries", "16 East Asian countries", "30 East Asian countries", "57 African countries", "8 Latin American countries", "Western Europe", "Western Offshoots", "Total 12 Western Europe", "Total 14 small west European countries", "Total 15 Latin American countries", "Total 15 West Asian countries", "Total 16 East Asian countries", "Total 21 small Caribbean countries", "Total 24 Small East Asian countries", "Total 3 Small African countries", "Total 30  Western Europe", "Total 30 East Asian countries", "Total 7 East European countries", "Total 8 Latin American countries", "Total 7 East European Countries",  "Total Africa", "Total Asia", "Successor Republics of USSR", "Total Latin America", "Total Western Offshoots", "Former Czechoslovakia", "Former Yugoslavia")) # Filtrar
+  
+
+# Transformar el formato del data frame mad para tener tres columnas: una para el nombre del país, otra para el año y otra para el valor de PIB per cápita 
+mad <- mad %>% 
+  gather(key = "year",
+         value = gdppc, 
+         -country)
+
+# Transformar tipo de variable de year de character a numeric; generar variable id concatenando el nombre del país y el año; filtrar data frame para sólo tener datos a partir de 1946 (año en que empieza el data frame de Geddes); 
+mad <- mad %>% 
+  mutate(id = paste(country, year, sep = ""),
+         year = as.numeric(year)) %>% 
+  filter(year >= 1945) %>% 
+  select(country, year, id, gdppc)
+
+# Calcular diversas variables: 1) Valor rezagado de gdppc; 2) cambio anual de gdppc; 3) cambio anual de gdppc rezagado entre 1 y 11 períodos; 4) Desviación del valor anula del cambio del gdppc respecto al promedio de los últimos 5 a 10 años
+mad %>% 
+  arrange(country, year) %>% 
+  group_by(country) %>% 
+  mutate(gdppcL1 = lag(gdppc), # Valor de gdppc rezagado 1 año
+         chgdppc = ((gdppc - gdppcL1)/gdppcL1)*100, # Cambio porcentual anual de gdppc
+         chgdppcL1 = lag(chgdppc),    # Cambio porcentual anual rezagado 1 año
+         chgdppcL2 = lag(chgdppc, 2), # Cambio porcentual anual rezagado 2 años
+         chgdppcL3 = lag(chgdppc, 3), # Cambio porcentual anual rezagado 3 años
+         chgdppcL4 = lag(chgdppc, 4), # Cambio porcentual anual rezagado 4 años
+         chgdppcL5 = lag(chgdppc, 5), # Cambio porcentual anual rezagado 5 años
+         chgdppcL6 = lag(chgdppc, 6), # Cambio porcentual anual rezagado 6 años
+         chgdppcL7 = lag(chgdppc, 7), # Cambio porcentual anual rezagado 7 años
+         chgdppcL8 = lag(chgdppc, 8), # Cambio porcentual anual rezagado 8 años
+         chgdppcL9 = lag(chgdppc, 9), # Cambio porcentual anual rezagado 9 años
+         chgdppcL10 = lag(chgdppc, 10), # Cambio porcentual anual rezagado 10 años
+         chgdppcL11 = lag(chgdppc, 11)) %>%  # Cambio porcentual anual rezagado 11 años
+  mutate(twoyma	= rollapply(chgdppcL1, 2, mean, align = "right", fill = NA), # promedio móvil de dos años del cambio porcentual anual rezagado un año (mediante align = "right")
+         threeyma	= rollapply(chgdppcL1, 3, mean, align = "right", fill = NA), # promedio móvil de tres años del cambio porcentual anual rezagado un año (mediante align = "right")
+         fouryma = rollapply(chgdppcL1, 4, mean, align = "right", fill = NA), # promedio móvil de cuatro años del cambio porcentual anual rezagado un año (mediante align = "right")
+         fiveyma = rollapply(chgdppcL1, 5, mean, align = "right", fill = NA), # promedio móvil de cinco años del cambio porcentual anual rezagado un año (mediante align = "right")
+         sixyma = rollapply(chgdppcL1, 6, mean, align = "right", fill = NA), # promedio móvil de seis años del cambio porcentual anual rezagado un año (mediante align = "right")
+         sevenyma = rollapply(chgdppcL1, 7, mean, align = "right", fill = NA), # promedio móvil de siete años del cambio porcentual anual rezagado un año (mediante align = "right")
+         eightyma = rollapply(chgdppcL1, 8, mean, align = "right", fill = NA), # promedio móvil de ocho años del cambio porcentual anual rezagado un año (mediante align = "right")
+         nineyma = rollapply(chgdppcL1, 9, mean, align = "right", fill = NA), # promedio móvil de nueve años del cambio porcentual anual rezagado un año (mediante align = "right")
+         tenyma = rollapply(chgdppcL1, 10, mean, align = "right", fill = NA)) %>%   # promedio móvil de diez años del cambio porcentual anual rezagado un año (mediante align = "right")
+  mutate(devfiveyma	= chgdppc - fiveyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos cinco años, rezagado un año 
+         devsixyma = chgdppc - sixyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos seis años, rezagado un año
+         devsevenyma = chgdppc - sevenyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos siete años, rezagado un año
+         deveightyma = chgdppc - eightyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos ocho años, rezagado un año
+         devnineyma = chgdppc - nineyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos nueve años, rezagado un año 
+         devtenyma = chgdppc - tenyma) # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos diez años, rezagado un año 
+  
+
+gwfsp %>% 
+  count(gwf.country) %>% 
+  View()
+  
+  
+names(mad)
+  
+mad %>% 
+  select(X__1) 
+  print(n = nrow(.))
 
 mad <- read.csv("/Users/segasi/Documents/Google/UCLA/Personal_Research/Regime_survival/Data/Maddison/Maddison GDP per capita with extra variables.csv", na.strings="NA", header = TRUE, dec = ".", sep =",")
 
