@@ -42,17 +42,27 @@ gwf <- read_excel("01_datos/cap_02/gwf.xlsx",
 # Este nuevo data frame es un subconjunto de la base de datos original y sólo incluyelas observaciones de los regímenes que ellos clasifican como party, party-military, party-military-personal y party-personal. 
 
 # Además de generar este subconjunto, hago dos cambios a la base de datos original de GWF: 1) reclasifico el régimen de Sudáfrica como "party" (GWF lo clasifican como "oligarchy") para incluirlo en la base de datos. 2) Cambio la fecha del principio del régimen de partido dominante de México a 1929 (originalmente codificado en 1915) porque es entonces cuando se fundó el Partido Nacional Revolucionario (PNR), predecesor del PRI.
-
 gwfsp <- gwf %>% 
+  filter(year < 2010) %>%
   mutate(gwf.regimetype = ifelse(gwf.country == "South Africa" & gwf.regimetype == "oligarchy", "party", gwf.regimetype), #  Reclasifciar a Sudáfrica como régimen "party"
-               gwf.casename = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", "Mexico 29-00", gwf.casename), # Cambiar nombre del caso de México
-               gwf.spell = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", 71, gwf.spell),  # Cambiar duración total del régimen priísta
-               gwf.duration = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", gwf.duration-14, gwf.duration)) %>%    # Cambiar contador de años acumulados del régimen priísta)
+         gwf.casename = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", "Mexico 29-00", gwf.casename), # Cambiar nombre del caso de México
+         gwf.spell = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", 71, gwf.spell),  # Cambiar duración total del régimen priísta
+         gwf.duration = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", gwf.duration-14, gwf.duration)) %>%    # Cambiar contador de años acumulados del régimen priísta)
   filter(str_detect(gwf.regimetype, "party")) # Filtrar datos para solo mantener observaciones de regímenes de partido dominante
 
-# Generar gwfsp09
 
-  
+# Generar variables dicotómicas para regiones y otra para identificar regímenes impuestos desde el extranjero
+gwfsp <- gwfsp %>% 
+  mutate(gwf.cacar	= ifelse(gwf.country %in% c("Cuba", "El Salvador", "Honduras", "Mexico", "Nicaragua"), 1, 0),
+         gwf.casia	= ifelse(gwf.country %in% c("Mongolia", "Afghanistan", "Turkmenistan", "Uzbekistan", "Sri Lanka", "Bangladesh"), 1, 0),
+         gwf.ceeurope = ifelse(gwf.country %in% c("Albania" , "Soviet Union", "Bulgaria", "Hungary", "Yugoslavia", "Czechoslovakia", "Poland", "Romania", "Germany East", "Serbia"), 1, 0),
+         gwf.easia = ifelse(gwf.country %in% c("China", "Vietnam", "Malaysia", "Taiwan", "Singapore", "Cambodia", "Laos", "Indonesia", "Korea North"), 1, 0),
+         gwf.meast = ifelse(gwf.country %in% c("Syria", "Iraq", "Turkey", "South Yemen", "Iran"), 1, 0),
+         gwf.nafrica = ifelse(gwf.country %in% c("Egypt", "Tunisia", "Algeria"), 1, 0),
+         gwf.samerica = ifelse(gwf.country %in% c("Paraguay", "Bolivia", "Colombia"), 1, 0), 
+         gwf.ssafrica = ifelse(gwf.country %in% c("Gabon", "South Africa", "Tanzania", "Botswana", "Senegal", "Ivory Coast", "Kenya", "Zambia", "Angola", "Mozambique", "Liberia", "Gambia","Zimbabwe", "Congo-Brz", "Guinea", "Rwanda", "Sierra Leone",	"Cameroon", "Burundi", "Namibia", "Ethiopia", "Eritrea", "Lesotho", "Chad", "Niger", "Madagascar", "Mali", "Ghana", "Guinea Bissau"), 1, 0), # Generar variable dicotómicas de regiones
+         fimposed = ifelse(gwf.country == "Afghanistan" & year > 1978 & year < 1994 | gwf.country == "Bulgaria" & year > 1946 & year < 1991 | gwf.country == "Cambodia" & year > 1978 & year < 1991 | gwf.country == "Czechoslovakia" & year > 1947 & year < 1991 | gwf.country == "Germany East" & year > 1944 & year < 1991 | gwf.country == "Hungary" & year > 1948 & year < 1991  | gwf.country == "Poland" & year > 1946 & year < 1990, 1, 0)) # Creación de variable fimposed, para identificar regímenes impuestos por potencias extranjeras
+
 
 
 ## Datos de Penn World Table (PWT) 7.0 ----
