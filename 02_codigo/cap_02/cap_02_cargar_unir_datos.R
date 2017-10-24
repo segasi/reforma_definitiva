@@ -51,7 +51,7 @@ gwfsp <- gwf %>%
   filter(str_detect(gwf.regimetype, "party")) # Filtrar datos para solo mantener observaciones de regímenes de partido dominante
 
 
-# Generar variables dicotómicas para regiones y otra para identificar regímenes impuestos desde el extranjero
+# Generar variables dicotómicas para regiones, tipo de régimen y otra para identificar regímenes impuestos desde el extranjero
 gwfsp <- gwfsp %>% 
   mutate(gwf.cacar	= ifelse(gwf.country %in% c("Cuba", "El Salvador", "Honduras", "Mexico", "Nicaragua"), 1, 0),
          gwf.casia	= ifelse(gwf.country %in% c("Mongolia", "Afghanistan", "Turkmenistan", "Uzbekistan", "Sri Lanka", "Bangladesh"), 1, 0),
@@ -61,8 +61,11 @@ gwfsp <- gwfsp %>%
          gwf.nafrica = ifelse(gwf.country %in% c("Egypt", "Tunisia", "Algeria"), 1, 0),
          gwf.samerica = ifelse(gwf.country %in% c("Paraguay", "Bolivia", "Colombia"), 1, 0), 
          gwf.ssafrica = ifelse(gwf.country %in% c("Gabon", "South Africa", "Tanzania", "Botswana", "Senegal", "Ivory Coast", "Kenya", "Zambia", "Angola", "Mozambique", "Liberia", "Gambia","Zimbabwe", "Congo-Brz", "Guinea", "Rwanda", "Sierra Leone",	"Cameroon", "Burundi", "Namibia", "Ethiopia", "Eritrea", "Lesotho", "Chad", "Niger", "Madagascar", "Mali", "Ghana", "Guinea Bissau"), 1, 0), # Generar variable dicotómicas de regiones
-         fimposed = ifelse(gwf.country == "Afghanistan" & year > 1978 & year < 1994 | gwf.country == "Bulgaria" & year > 1946 & year < 1991 | gwf.country == "Cambodia" & year > 1978 & year < 1991 | gwf.country == "Czechoslovakia" & year > 1947 & year < 1991 | gwf.country == "Germany East" & year > 1944 & year < 1991 | gwf.country == "Hungary" & year > 1948 & year < 1991  | gwf.country == "Poland" & year > 1946 & year < 1990, 1, 0)) # Creación de variable fimposed, para identificar regímenes impuestos por potencias extranjeras
-
+         fimposed = ifelse(gwf.country == "Afghanistan" & year > 1978 & year < 1994 | gwf.country == "Bulgaria" & year > 1946 & year < 1991 | gwf.country == "Cambodia" & year > 1978 & year < 1991 | gwf.country == "Czechoslovakia" & year > 1947 & year < 1991 | gwf.country == "Germany East" & year > 1944 & year < 1991 | gwf.country == "Hungary" & year > 1948 & year < 1991  | gwf.country == "Poland" & year > 1946 & year < 1990, 1, 0), # Creación de variable fimposed, para identificar regímenes impuestos por potencias extranjeras
+         gwf.party = ifelse(gwf.regimetype == "party", 1, 0), # Dummy partido
+         gwf.partymil = ifelse(gwf.regimetype == "party-military", 1, 0), # Dummy partido militar
+         gwf.partymilper = ifelse(gwf.regimetype == "party-military-personal", 1, 0), # Dummy partido militar personalist
+         gwf.partyper = ifelse(gwf.regimetype == "party-personal", 1, 0)) # Dummy partido personalista
 
 
 ## Datos de Penn World Table (PWT) 7.0 ----
