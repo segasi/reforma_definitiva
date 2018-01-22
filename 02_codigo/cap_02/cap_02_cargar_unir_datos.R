@@ -1,31 +1,14 @@
 ### Paquetes ----
 # install.packages("pacman") En caso de no tener el paquete pacman instalado
 library(pacman)
-p_load(Amelia,
-       haven,
-       readxl,
-       stringr,
-       survival,
-       tidyr,
-       tidyverse,
-       zoo
-       # car, 
-       # effects, 
-       # foreign, 
-       # ggplot2, 
-       # KMsurv, 
-       # MASS, 
-       # splines, 
-       # statnet, 
-       # survival, 
-       # Zelig
-       )
+p_load(Amelia, haven, janitor, readxl, stringr,
+       survival, tidyr, tidyverse, zoo)
+       
 
 
 ### Importar y procesar datos ----
 
-
-## Datos de Geddes, Wright y Franz (GWF) ----
+# Datos de Geddes, Wright y Franz (GWF) ----
 
 # Cargar base de datos gwf.xlx. Esta base de datos incluye todos los regíemenes incluidos en la base de datos de GWF para el período 1945-2010
 gwf <- read_excel("01_datos/cap_02/gwf.xlsx", 
@@ -36,14 +19,15 @@ gwf <- read_excel("01_datos/cap_02/gwf.xlsx",
                                 "numeric", "numeric", "numeric", 
                                 "numeric", "text", "numeric"))
 
-
 # Generar gwfsp  
 
 # Este nuevo data frame es un subconjunto de la base de datos original y sólo incluyelas observaciones de los regímenes que ellos clasifican como party, party-military, party-military-personal y party-personal. 
 
-# Además de generar este subconjunto, hago dos cambios a la base de datos original de GWF: 1) reclasifico el régimen de Sudáfrica como "party" (GWF lo clasifican como "oligarchy") para incluirlo en la base de datos. 2) Cambio la fecha del principio del régimen de partido dominante de México a 1929 (originalmente codificado en 1915) porque es entonces cuando se fundó el Partido Nacional Revolucionario (PNR), predecesor del PRI.
+# Además de generar este subconjunto, hago tres cambios a la base de datos original de GWF: 1) reclasifico el régimen de Sudáfrica como "party" (GWF lo clasifican como "oligarchy") para incluirlo en la base de datos; 2) Cambio la fecha del principio del régimen de partido dominante de México a 1929 (originalmente codificado en 1915) porque es entonces cuando se fundó el Partido Nacional Revolucionario (PNR), predecesor del PRI; 3) excluyo el caso de Bolivia 43-46, Iran 79-NA y Turkey 23-50
+
 gwfsp <- gwf %>% 
-  filter(year < 2010) %>%
+  filter(year < 2010) %>% 
+  filter(gwf.casename != "Bolivia 43-46" & gwf.casename != "Iran 79-NA" & gwf.casename !=  "Turkey 23-50") %>% 
   mutate(gwf.regimetype = ifelse(gwf.country == "South Africa" & gwf.regimetype == "oligarchy", "party", gwf.regimetype), #  Reclasifciar a Sudáfrica como régimen "party"
          gwf.casename = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", "Mexico 29-00", gwf.casename), # Cambiar nombre del caso de México
          gwf.spell = ifelse(gwf.country == "Mexico" & gwf.regimetype == "party", 71, gwf.spell),  # Cambiar duración total del régimen priísta
@@ -92,7 +76,7 @@ pwt7.0 <- pwt7.0_original %>%
          pwt7.rgdpch.chL9 = lag(pwt7.rgdpch.ch, 9), # Cambio porcentual anual rezagado 9 años
          pwt7.rgdpch.chL10 = lag(pwt7.rgdpch.ch, 10), # Cambio porcentual anual rezagado 10 años
          pwt7.rgdpch.chL11 = lag(pwt7.rgdpch.ch, 11)) %>%  # Cambio porcentual anual rezagado 11 años
-  mutate(pwt7.twoyma	= rollapply(pwt7.rgdpch.chL1, 2, mean, align = "right", fill = NA), # promedio móvil de dos años del cambio porcentual anual rezagado un año (mediante align = "right")
+  mutate(pwt7.twoyma	= rollapply(pwt7.rgdpch.ch, 2, mean, align = "right", fill = NA), # promedio móvil de dos años del cambio porcentual anual rezagado un año (mediante align = "right")
          pwt7.threeyma	= rollapply(pwt7.rgdpch.chL1, 3, mean, align = "right", fill = NA), # promedio móvil de tres años del cambio porcentual anual rezagado un año (mediante align = "right")
          pwt7.fouryma = rollapply(pwt7.rgdpch.chL1, 4, mean, align = "right", fill = NA), # promedio móvil de cuatro años del cambio porcentual anual rezagado un año (mediante align = "right")
          pwt7.fiveyma = rollapply(pwt7.rgdpch.chL1, 5, mean, align = "right", fill = NA), # promedio móvil de cinco años del cambio porcentual anual rezagado un año (mediante align = "right")
@@ -106,7 +90,8 @@ pwt7.0 <- pwt7.0_original %>%
          pwt7.devsevenyma = pwt7.rgdpch.ch - pwt7.sevenyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos siete años, rezagado un año
          pwt7.deveightyma = pwt7.rgdpch.ch - pwt7.eightyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos ocho años, rezagado un año
          pwt7.devnineyma = pwt7.rgdpch.ch - pwt7.nineyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos nueve años, rezagado un año 
-         pwt7.devtenyma = pwt7.rgdpch.ch - pwt7.tenyma) # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos diez años, rezagado un año 
+         pwt7.devtenyma = pwt7.rgdpch.ch - pwt7.tenyma) %>% # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos diez años, rezagado un año 
+  ungroup() 
 
 
 ## Datos de Maddison ----
@@ -166,7 +151,9 @@ mad <- mad %>%
          mad.devsevenyma = mad.chgdppc - mad.sevenyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos siete años, rezagado un año
          mad.deveightyma = mad.chgdppc - mad.eightyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos ocho años, rezagado un año
          mad.devnineyma = mad.chgdppc - mad.nineyma, # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos nueve años, rezagado un año 
-         mad.devtenyma = mad.chgdppc - mad.tenyma) # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos diez años, rezagado un año
+         mad.devtenyma = mad.chgdppc - mad.tenyma) %>% # Desviación del cambio anual de gdppc respecto al promedio móvil del cambio de los últimos diez años, rezagado un año
+  ungroup()
+
 
 
 ## Datos de precios de gas y petróleo de Ross ----
@@ -195,6 +182,8 @@ u2 <- u1 %>%
 u3 <- u2 %>% 
   left_join(ross, by= c("gwf.country" = "ross.country", "year" = "ross.year"))
 
+# OJO: al correr este último snipet aparecerá el aviso "Warning message: Column `year`/`ross.year` has different attributes on LHS and RHS of join". Esto se debe a que mientras que las observaciones del data frame u2 comienzan en 1946, las del data frame ross comienzan en 1946. Para verificar que las dimensiones son correctas después de hacer la unión, puedes usar el siguiente código.
+
 # Comparación de dimensiones
 dim(gwfsp)
 dim(u1)
@@ -208,12 +197,12 @@ dim(u3)
 missmap(u3, col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
 
 # Mapas de países seleccionados porque tienen el mayor número de observaciones faltantes
-missmap(u3[u3$gwf.country == "Eritrea",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
-missmap(u3[u3$gwf.country == "Ethiopia",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
-missmap(u3[u3$gwf.country == "Czechoslovakia",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
-missmap(u3[u3$gwf.country == "Germany East",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
-missmap(u3[u3$gwf.country == "Korea North",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
-missmap(u3[u3$gwf.country == "South Yemen",], col = c("#c04d50","#4f81bd"), main= "", x.cex = 0.01, legend=FALSE)
+missmap(u3[u3$gwf.country == "Eritrea",], col = c("#c04d50","#4f81bd"), main= "Observaciones faltantes de Eritrea", x.cex = 0.01, legend=FALSE)
+missmap(u3[u3$gwf.country == "Ethiopia",], col = c("#c04d50","#4f81bd"), main= "Observaciones faltantes de Ethiopia", x.cex = 0.01, legend=FALSE)
+missmap(u3[u3$gwf.country == "Czechoslovakia",], col = c("#c04d50","#4f81bd"), main= "Observaciones faltantes de Czechoslovakia", x.cex = 0.01, legend=FALSE)
+missmap(u3[u3$gwf.country == "Germany East",], col = c("#c04d50","#4f81bd"), main= "Observaciones faltantes de Germany East", x.cex = 0.01, legend=FALSE)
+missmap(u3[u3$gwf.country == "Korea North",], col = c("#c04d50","#4f81bd"), main= "Observaciones faltantes de Korea North", x.cex = 0.01, legend=FALSE)
+missmap(u3[u3$gwf.country == "South Yemen",], col = c("#c04d50","#4f81bd"), main= "Observaciones faltantes de South Yemen", x.cex = 0.01, legend=FALSE)
 
 ## Guardar data frame u3 como sp para usarla en el análisis y guardar archivo .csv
 sp <- u3
