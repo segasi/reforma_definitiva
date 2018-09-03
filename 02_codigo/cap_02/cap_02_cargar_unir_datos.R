@@ -57,8 +57,6 @@ pwt7.0_original <- read.csv("01_datos/cap_02/PWT_7.0.csv", na.strings="NA", head
 
 # Renombrar países y calcular diversas variables: 1) Valor rezagado de gdppc; 2) cambio anual de gdppc; 3) cambio anual de gdppc rezagado entre 1 y 11 períodos; 4) Desviación del valor anula del cambio del gdppc respecto al promedio de los últimos 5 a 10 años
 pwt7.0 <- pwt7.0_original %>% 
-  select(country, year, pwt7.rgdpch)  %>% 
-  arrange(country, year) %>% 
   mutate(pwt7.country = as.character(country), 
          pwt7.country = ifelse(pwt7.country == "China Version 1", "China", ifelse(pwt7.country == "Congo, Republic of", "Congo-Brz", ifelse(pwt7.country == "Gambia, The", "Gambia", ifelse(pwt7.country == "Guinea-Bissau", "Guinea Bissau", ifelse(pwt7.country == "Cote d`Ivoire", "Ivory Coast", pwt7.country)))))) %>% # Renombrar países
   group_by(pwt7.country) %>% 
@@ -76,7 +74,7 @@ pwt7.0 <- pwt7.0_original %>%
          pwt7.rgdpch.chL9 = lag(pwt7.rgdpch.ch, 9), # Cambio porcentual anual rezagado 9 años
          pwt7.rgdpch.chL10 = lag(pwt7.rgdpch.ch, 10), # Cambio porcentual anual rezagado 10 años
          pwt7.rgdpch.chL11 = lag(pwt7.rgdpch.ch, 11)) %>%  # Cambio porcentual anual rezagado 11 años
-  mutate(pwt7.twoyma	= rollapply(pwt7.rgdpch.ch, 2, mean, align = "right", fill = NA), # promedio móvil de dos años del cambio porcentual anual rezagado un año (mediante align = "right")
+  mutate(pwt7.twoyma	= rollapply(pwt7.rgdpch.chL1, 2, mean, align = "right", fill = NA), # promedio móvil de dos años del cambio porcentual anual rezagado un año (mediante align = "right")
          pwt7.threeyma	= rollapply(pwt7.rgdpch.chL1, 3, mean, align = "right", fill = NA), # promedio móvil de tres años del cambio porcentual anual rezagado un año (mediante align = "right")
          pwt7.fouryma = rollapply(pwt7.rgdpch.chL1, 4, mean, align = "right", fill = NA), # promedio móvil de cuatro años del cambio porcentual anual rezagado un año (mediante align = "right")
          pwt7.fiveyma = rollapply(pwt7.rgdpch.chL1, 5, mean, align = "right", fill = NA), # promedio móvil de cinco años del cambio porcentual anual rezagado un año (mediante align = "right")
@@ -98,9 +96,10 @@ pwt7.0 <- pwt7.0_original %>%
 mad_original <- read_excel("01_datos/cap_02/Maddison - Eco Indicators 1500-2008.xls", sheet = "PerCapita GDP", range = "A3:GR194")
 
 # Renombrar variable, eliminar columnas vacías, renombrar países y eliminar datos de categorias reguionales incluidas en la base de datos original
+
 mad <- mad_original %>% 
-  rename(mad.country = X__1) %>% # Renombrar columna del país
-  select(mad.country, which(sapply(.,class)=="numeric")) %>%  # Eliminar columnas vacías en la base de datos
+  rename(mad.country = X__1) %>% # Renombrar columna del país     
+  select(-c(X__2, X__3, X__4, X__5, X__6)) %>% # Eliminar columnas vacías en la base de datos
   mutate(mad.country = ifelse(mad.country == "Total Former USSR", "USSR", ifelse(mad.country == "Indonesia (including Timor until 1999)", "Indonesia", ifelse(mad.country == "Congo 'Brazzaville'", "Congo-Brz", ifelse(mad.country == "Côte d'Ivoire", "Ivory Coast", ifelse(mad.country == "North Korea", "Korea North", ifelse(mad.country == "Serbia/Montenegro/Kosovo", "Serbia", ifelse(mad.country == "USSR", "Soviet Union", mad.country)))))))) %>%  # Renombrar países
   filter(!mad.country %in% c("15 Latin American countries", "15 West Asian countries", "16 East Asian countries", "30 East Asian countries", "57 African countries", "8 Latin American countries", "Western Europe", "Western Offshoots", "Total 12 Western Europe", "Total 14 small west European countries", "Total 15 Latin American countries", "Total 15 West Asian countries", "Total 16 East Asian countries", "Total 21 small Caribbean countries", "Total 24 Small East Asian countries", "Total 3 Small African countries", "Total 30  Western Europe", "Total 30 East Asian countries", "Total 7 East European countries", "Total 8 Latin American countries", "Total 7 East European Countries",  "Total Africa", "Total Asia", "Successor Republics of USSR", "Total Latin America", "Total Western Offshoots", "Former Czechoslovakia", "Former Yugoslavia")) # Filtrar
 
@@ -208,7 +207,7 @@ missmap(u3[u3$gwf.country == "South Yemen",], col = c("#c04d50","#4f81bd"), main
 sp <- u3
 write_csv(sp, "03_datos_generados/sp.csv")
 
-# Generar archivo con terminación .dta para llevar a cabo el análisis de los modelos de supervivencia en STATA (ver código incluido en el mismo folder que este archivo)
+# Generar archivo con terminación .dta para llevar a cabo el análisis de los modelos de supervivencia y Logit Rare Events en STATA (ver código incluido en el mismo folder que este archivo)
 sp_dta <- sp %>% 
   rename_(.dots=setNames(names(.), tolower(gsub("\\.", "_", names(.)))))
 
