@@ -1,6 +1,7 @@
 ### Paquetes ----
 library(pacman)
-p_load(cowplot, readr, readxl, tidyverse, stringr)
+p_load(cowplot, flexsurv, readr, readxl, tidyverse, 
+       stringr, survival, zeligverse)
 
 ### Importar y procesar datos ----
 source("02_codigo/cap_02/cap_02_cargar_unir_datos.R") # Corre el script 'cap_02_cargar_unir_datos.R' (incluido en el mismo folder que este archivo) para importar y transformar los datos
@@ -31,7 +32,8 @@ sp %>%
         axis.title.y = element_text(size = 15, hjust = 1, face = "bold", margin = margin(0, 15, 0, 0)),
         axis.line = element_line(size = 0.5, colour = "#666666"))
 
-ggsave("fig_2.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 100)
+ggsave("fig_2.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_2.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 # Análisis asociado a Figura 2.1 ----
 
@@ -213,7 +215,8 @@ sp %>%
         legend.position = "none")
 
 # Guardar gráfica
-ggsave("fig_2.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 100)
+ggsave("fig_2.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_2.2.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 # Análisis asociado a figura 2.2 ----
 
@@ -382,7 +385,8 @@ g3 <- sp %>%
   
 # Unir gráficas
 plot_grid(g1, g2, g3, nrow = 3, ncol = 1, align = 'h')
-ggsave("fig_2.3.png", path = "04_graficas", width = 10, height = 12, dpi = 100)
+ggsave("fig_2.3.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
+ggsave("fig_2.3.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
 
 ## Misma gráfica pero sin restringir rangos de cada una. Esta segunda versión NO se incluye en el libro
 
@@ -449,9 +453,9 @@ g3a <- sp %>%
 
 plot_grid(g1a, g2a, g3a, nrow = 3, ncol = 1, align = 'h')
 
-### Análisis de la figura 2.3 ----
+# Análisis asociado a la figura 2.4 ----
 
-## Cálculo del número de regímenes incluidos en cada úno de las gráficas de la figura 2.3 ----
+## Cálculo del número de regímenes incluidos en cada úno de las gráficas de la figura 2.3 
 
 # Gráfica superior, utilizando pwt7.rgdpch.ch
 sp %>%
@@ -471,22 +475,20 @@ sp %>%
   distinct(gwf.casename) %>% 
   print(n = nrow(.))
 
-## Cálculos relacionados con Crecimiento de corto plazo ----
-
-## Mediana de todos los regímenes que cayeron
+## Cálculos relacionados con Crecimiento de corto plazo 
+# Mediana de todos los regímenes que cayeron
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.rgdpch.ch))  %>% 
   summarise(mediana = median(pwt7.rgdpch.ch)) 
 
-## Mediana de todos los regímenes que cayeron, distinguiendo si eran apoyados o no por potencia extranjera
+# Mediana de todos los regímenes que cayeron, distinguiendo si eran apoyados o no por potencia extranjera
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.rgdpch.ch))  %>% 
   group_by(fimposed) %>% 
   summarise(mediana = median(pwt7.rgdpch.ch)) %>% 
   ungroup()
 
-
-## Mediana de todos los regimenes, por año previo a la transición 
+# Mediana de todos los regimenes, por año previo a la transición 
 
 # Datos ordenados por el valor de la mediana
 sp %>%
@@ -512,7 +514,7 @@ sp %>%
   print(n = nrow(.))
 
 
-## Valor en el año -1
+# Valor en el año -1
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.rgdpch.ch))  %>% 
   group_by(gwf.casename) %>% 
@@ -528,7 +530,6 @@ sp %>%
 
 
 ## Valor en el año 0
-
 # Mediana de todos los regímenes 
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.rgdpch.ch))  %>% 
@@ -564,22 +565,21 @@ sp %>%
   print(n = nrow(.))
 
 
-## Cálculos relacionados con Promedio de cinco años ----
+## Cálculos relacionados con Promedio de cinco años
 
-## Mediana de todos los regímenes que cayeron
+# Mediana de todos los regímenes que cayeron
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.fiveyma))  %>% 
   summarise(mediana = median(pwt7.fiveyma)) 
 
-## Mediana de todos los regímenes que cayeron, distinguiendo si eran apoyados o no por potencia extranjera
+# Mediana de todos los regímenes que cayeron, distinguiendo si eran apoyados o no por potencia extranjera
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.fiveyma))  %>% 
   group_by(fimposed) %>% 
   summarise(mediana = median(pwt7.fiveyma)) %>% 
   ungroup()
 
-## Mediana de todos los regimenes, por año previo a la transición 
-
+# Mediana de todos los regimenes, por año previo a la transición 
 # Datos ordenados por el valor de la mediana
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.fiveyma))  %>% 
@@ -617,22 +617,22 @@ sp %>%
          suma_acumu_positivo = cumsum(positivo),
          por_acumu = round((suma_acumu_positivo/44)*100, 1)) %>% 
   print(n = nrow(.))
-## Cálculos relacionados con Desviación del promedio móvil de siete años ----
 
-## Mediana de todos los regímenes que cayeron
+## Cálculos relacionados con Desviación del promedio móvil de siete años 
+
+# Mediana de todos los regímenes que cayeron
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.devsevenyma))  %>% 
   summarise(mediana = median(pwt7.devsevenyma)) 
 
-## Mediana de todos los regímenes que cayeron, distinguiendo si eran apoyados o no por potencia extranjera
+# Mediana de todos los regímenes que cayeron, distinguiendo si eran apoyados o no por potencia extranjera
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.devsevenyma))  %>% 
   group_by(fimposed) %>% 
   summarise(mediana = median(pwt7.devsevenyma)) %>% 
   ungroup()
 
-## Mediana de todos los regimenes, por año previo a la transición 
-
+# Mediana de todos los regimenes, por año previo a la transición 
 # Datos ordenados por el valor de la mediana
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.devsevenyma))  %>% 
@@ -645,7 +645,7 @@ sp %>%
   arrange(mediana) %>% 
   print(n = nrow(.))
 
- Datos sin ordenar
+# Datos sin ordenar
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.devsevenyma))  %>% 
   group_by(gwf.casename) %>% 
@@ -657,7 +657,7 @@ sp %>%
   print(n = nrow(.))
 
 
-## Valor en el año -1
+# Valor en el año -1
 sp %>%
   filter(!str_detect(gwf.casename, "NA"), !is.na(pwt7.devsevenyma))  %>% 
   group_by(gwf.casename) %>% 
@@ -670,3 +670,233 @@ sp %>%
          suma_acumu_positivo = cumsum(positivo),
          por_acumu = round((suma_acumu_positivo/43)*100, 1)) %>% 
   print(n = nrow(.))
+
+
+### Figura 2.4  ----
+# Boxplots del Panel (a) - Cambio en PIB per capita
+g1 <- sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  mutate(tipo = ifelse(años_previos_transicion == 1 & !str_detect(gwf.casename, "NA"), "Concluidos, año\nprevio a la transición", ifelse(años_previos_transicion > 1 & !str_detect(gwf.casename, "NA"), "Concluidos, todos los\naños previos al año -1", ifelse(str_detect(gwf.casename, "NA"), "Continuaban en 2009,\ntodos los años", "Otros")))) %>% 
+  filter(tipo != "Otros") %>% 
+  ggplot() +
+  geom_boxplot(aes(tipo, pwt7.rgdpch.ch, group = tipo)) +
+  labs(title = "Panel (a) - Cambio en PIB per capita", 
+       x = "",
+      y = "Cambio porcentual") +
+  scale_y_continuous(limits = c(-15, 15), breaks = seq(-15, 15, 5)) +
+  geom_hline(yintercept = 0, color = "grey50", linetype = 3) +
+  theme_classic() +
+  theme(plot.caption = element_text(hjust = 0), 
+        plot.title = element_text(size = 18, hjust = 0, face = "bold", margin = margin(0, 0, 15, 0), color = "#666666"),
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 13, hjust = 1, face = "bold", margin = margin(15, 0, 0, 0)), 
+        axis.title.y = element_text(size = 13, hjust = 1, face = "bold", margin = margin(0, 15, 0, 0)),
+        axis.line = element_line(size = 0.5, colour = "#666666"),
+        legend.position = "none")
+
+
+# Boxplots del Panel (b) - Promedio móvil de cinco años
+g2 <- sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  mutate(tipo = ifelse(años_previos_transicion == 1 & !str_detect(gwf.casename, "NA"), "Concluidos, año\nprevio a la transición", ifelse(años_previos_transicion > 1 & !str_detect(gwf.casename, "NA"), "Concluidos, todos los\naños previos al año -1", ifelse(str_detect(gwf.casename, "NA"), "Continuaban en 2009,\ntodos los años", "Otros")))) %>% 
+  filter(tipo != "Otros") %>% 
+  ggplot() +
+  geom_boxplot(aes(tipo, pwt7.fiveyma, group = tipo)) +
+  labs(title = "Panel (b) - Promedio móvil de cinco años", 
+       x = "",
+       y = "Cambio porcentual") +
+  scale_y_continuous(limits = c(-15, 15), breaks = seq(-15, 15, 5)) +
+  geom_hline(yintercept = 0, color = "grey50", linetype = 3) +
+  theme_classic() +
+  theme(plot.caption = element_text(hjust = 0), 
+        plot.title = element_text(size = 18, hjust = 0, face = "bold", margin = margin(0, 0, 15, 0), color = "#666666"),
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 13, hjust = 1, face = "bold", margin = margin(15, 0, 0, 0)), 
+        axis.title.y = element_text(size = 13, hjust = 1, face = "bold", margin = margin(0, 15, 0, 0)),
+        axis.line = element_line(size = 0.5, colour = "#666666"),
+        legend.position = "none")
+
+
+# Boxplots del Panel (c) - Desviación del promedio móvil de siete años
+g3 <- sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  mutate(tipo = ifelse(años_previos_transicion == 1 & !str_detect(gwf.casename, "NA"), "Concluidos, año\nprevio a la transición", ifelse(años_previos_transicion > 1 & !str_detect(gwf.casename, "NA"), "Concluidos, todos los\naños previos al año -1", ifelse(str_detect(gwf.casename, "NA"), "Continuaban en 2009,\ntodos los años", "Otros")))) %>% 
+  filter(tipo != "Otros") %>% 
+  ggplot() +
+  geom_boxplot(aes(tipo, pwt7.devsevenyma, group = tipo)) +
+  labs(title = "Panel (c) - Desviación del promedio móvil de siete años", 
+       x = "",
+       y = "Cambio porcentual") +
+  scale_y_continuous(limits = c(-15, 15), breaks = seq(-15, 15, 5)) +
+  geom_hline(yintercept = 0, color = "grey50", linetype = 3) +
+  theme_classic() +
+  theme(plot.caption = element_text(hjust = 0), 
+        plot.title = element_text(size = 18, hjust = 0, face = "bold", margin = margin(0, 0, 15, 0), color = "#666666"),
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 13, hjust = 1, face = "bold", margin = margin(15, 0, 0, 0)), 
+        axis.title.y = element_text(size = 13, hjust = 1, face = "bold", margin = margin(0, 15, 0, 0)),
+        axis.line = element_line(size = 0.5, colour = "#666666"),
+        legend.position = "none")
+
+
+# Unir gráficas
+plot_grid(g1, g2, g3, nrow = 3, ncol = 1, align = 'h')
+ggsave("fig_2.4.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
+ggsave("fig_2.4.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
+
+# Análisis asociado a la figura 2.4 -----
+
+# Datos de duración de China, Malasia, Singapur y Vietnam 
+sp %>%
+  filter(gwf.casename %in% c("China 49-NA", "Malaysia 57-NA", "Singapore 65-NA", "Vietnam 54-NA")) %>% 
+  group_by(gwf.casename) %>% 
+  summarise(duracion = last(gwf.duration)) %>% 
+  ungroup()
+
+
+# Medianas del Panel (a) - Cambio en PIB per capita
+sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  mutate(tipo = ifelse(años_previos_transicion == 1 & !str_detect(gwf.casename, "NA"), "Concluidos, año\nprevio a la transición", ifelse(años_previos_transicion > 1 & !str_detect(gwf.casename, "NA"), "Concluidos, todos los\naños previos al año -1", ifelse(str_detect(gwf.casename, "NA"), "Continuaban en 2009,\ntodos los años", "Otros")))) %>% 
+  filter(tipo != "Otros") %>% 
+  group_by(tipo) %>% 
+  summarise(mediana = median(pwt7.rgdpch.ch, na.rm = T)) %>% 
+  ungroup()
+
+# Medianas del Panel (b) - Promedio móvil de cinco años
+sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  mutate(tipo = ifelse(años_previos_transicion == 1 & !str_detect(gwf.casename, "NA"), "Concluidos, año\nprevio a la transición", ifelse(años_previos_transicion > 1 & !str_detect(gwf.casename, "NA"), "Concluidos, todos los\naños previos al año -1", ifelse(str_detect(gwf.casename, "NA"), "Continuaban en 2009,\ntodos los años", "Otros")))) %>% 
+  filter(tipo != "Otros") %>% 
+  group_by(tipo) %>% 
+  summarise(mediana = median(pwt7.fiveyma, na.rm = T)) %>% 
+  ungroup()
+
+
+# Medianas del Panel (c) - Desviación del promedio móvil de siete años
+sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  mutate(tipo = ifelse(años_previos_transicion == 1 & !str_detect(gwf.casename, "NA"), "Concluidos, año\nprevio a la transición", ifelse(años_previos_transicion > 1 & !str_detect(gwf.casename, "NA"), "Concluidos, todos los\naños previos al año -1", ifelse(str_detect(gwf.casename, "NA"), "Continuaban en 2009,\ntodos los años", "Otros")))) %>% 
+  filter(tipo != "Otros") %>% 
+  group_by(tipo) %>% 
+  summarise(mediana = median(pwt7.devsevenyma, na.rm = T)) %>% 
+  ungroup()
+
+# Datos de México
+sp %>%
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  filter(gwf.casename == "Mexico 29-00") %>% 
+  select(year, gwf.casename, años_previos_transicion, pwt7.rgdpch.ch, pwt7.fiveyma, pwt7.devsevenyma) %>% 
+  print(n = nrow(.))
+
+
+# Datos de Angola, Cuba, Siria, Senegal, Sri Lanka, Taiwán 
+sp %>%
+  # count(gwf.casename) %>% print(n = nrow(.))
+  group_by(gwf.casename) %>% 
+  mutate(años_previos_transicion = gwf.spell - gwf.duration) %>% 
+  ungroup() %>% 
+  filter(gwf.casename %in% c("Angola 75-NA", "Cuba 59-NA", "Iraq 68-79", "Senegal 60-00", "Syria 63-NA", "Sri Lanka 78-94", "Taiwan 49-00")) %>% 
+  select(year, gwf.casename, años_previos_transicion, pwt7.fiveyma) %>% 
+  print(n = nrow(.))
+
+
+### Modelos ----
+
+# Todos los modelos presentados en el capítulo 2 fueron calculados en STATA, usando (i) la base de datos "sp.dta",  generada en R con el script "cap_02_cargar_unir_datos.R"; y (ii) el código que está disponible en los do files "cap_02_modelos_logit.do" y "cap_02_modelos_survival.do", incluidos en el folder "02_codigo" de este proyecto.
+
+# En esta sección únicamente calculo el número de regímenes en cada modelo
+
+# Número de regímenes en los modelos en cuadros 2.1 y 2.2
+sp %>% filter(!is.na(pwt7.rgdpch.chL1)) %>% distinct(gwf.casename) # Modelo 1
+sp %>% filter(!is.na(pwt7.fiveyma)) %>% distinct(gwf.casename) # Modelo 2
+sp %>% filter(!is.na(pwt7.devsevenyma)) %>% distinct(gwf.casename) # Modelo 3
+sp %>% filter(!is.na(pwt7.rgdpch.chL1), # Modelos 4 y 7
+              !is.na(ross.precioL1.log)) %>% 
+  distinct(gwf.casename) 
+sp %>% filter(!is.na(pwt7.fiveyma),     # Modelos 5 y 8
+              !is.na(ross.precioL1.log)) %>% 
+  distinct(gwf.casename)
+sp %>% filter(!is.na(pwt7.devsevenyma), # Modelos 6 y 9
+              !is.na(ross.precioL1.log)) %>% 
+  distinct(gwf.casename)
+
+
+# Número de regímenes en los modelos en los Apéndices III y IV 
+sp %>% filter(!is.na(mad.chgdppcL1)) %>% distinct(gwf.casename)   # Modelo 1
+sp %>% filter(!is.na(mad.fiveyma)) %>%  distinct(gwf.casename)    # Modelo 2
+sp %>% filter(!is.na(mad.devsevenyma)) %>% distinct(gwf.casename) # Modelo 3
+sp %>% filter(!is.na(mad.chgdppcL1),         # Modelos 4 y 7
+              !is.na(ross.precioL1.log)) %>% 
+  distinct(gwf.casename)
+sp %>% filter(!is.na(mad.fiveyma),           # Modelos 5 y 8 
+              !is.na(ross.precioL1.log)) %>% 
+  distinct(gwf.casename)
+sp %>% filter(!is.na(mad.devsevenyma),       # Modelos 6 y 9 
+              !is.na(ross.precioL1.log)) %>% 
+  distinct(gwf.casename)
+
+
+### Figura 2.6 ----
+
+# Esta gráfica es construida con datos previamente calculados en STATA usando el archivo
+# cap_02_modelos_logit.do, disponible en el folder 02_codigo de este proyecto.
+
+# Cargar datos
+datos <- read_csv("01_datos/cap_02/datos_grafica_2.6.csv")
+
+# Hacer la gráfica
+datos %>% 
+  ggplot() +
+  geom_line(aes(pwt7.fiveyma, pred_y), size = 1) +
+  geom_line(aes(pwt7.fiveyma, lower), size = 1, col = "grey80", linetype = 2) +
+  geom_line(aes(pwt7.fiveyma, upper), size = 1, col = "grey80", linetype = 2) +
+  geom_segment(aes(x = 1.5, y = 0.24, xend = 2.7, yend = 0.24), size = 1) +
+  geom_segment(aes(x = 1.5, y = 0.225, xend = 2.7, yend = 0.225), size = 1, col = "grey80", linetype = 2) +
+  annotate("text", label = "Probabilidad predicha", x = 3, y = 0.24, size = 5, hjust = 0) +
+  annotate("text", label = "Intervalo de confianza de 95%", x = 3, y = 0.225, size = 5, hjust = 0) +
+  scale_x_continuous(breaks = seq(-9, 9, 1)) +
+  scale_y_continuous(breaks = seq(0, 0.25, 0.025)) +
+  labs(x = "Cambio porcentual",
+       y = "Probabilidad de caída") +
+  theme_classic() +
+  theme(plot.caption = element_text(hjust = 0), 
+        plot.title = element_text(size = 18, hjust = 0, face = "bold", margin = margin(0, 0, 15, 0), color = "#666666"),
+        axis.text = element_text(size = 14, colour = "#666666", face = "bold"),
+        axis.title.x = element_text(size = 15, hjust = 1, face = "bold", margin = margin(15, 0, 0, 0)), 
+        axis.title.y = element_text(size = 15, hjust = 1, face = "bold", margin = margin(0, 15, 0, 0)),
+        axis.line = element_line(size = 0.5, colour = "#666666"),
+        legend.position = "none")
+
+ggsave("fig_2.6.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_2.6.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+
+
+### Análisis de cifras relacionadas con la figura 2.6 ----
+
+# Número de observaciones país año en el que el Promedio móvil de cinco años es menor a -3%
+sp %>% 
+  group_by(gwf.casename) %>% 
+  summarise(num = sum(pwt7.fiveyma <= -3)) %>% 
+  ungroup() %>% 
+  filter(!is.na(num)) %>% 
+  mutate(total_yr = sum(num), 
+         por_yr = (total_yr/2184)*100) %>% 
+  print(n = nrow(.))
+
+
+
