@@ -1,14 +1,14 @@
 ### Paquetes ----
 # install.packages("pacman") En caso de no tener el paquete pacman instalado
 library(pacman)
-p_load(broom, cowplot, haven, janitor, lubridate, patchwork, readxl, stringr, tidyr, tidyverse, writexl, zoo)
+p_load(broom, cowplot, haven, janitor, lubridate, readxl, stringr, tidyr, tidyverse, writexl, zoo)
 
 
 ### Importar datos ----
-pri <- read_excel("01_datos/cap_04/renuncias_pri_1987_2000.xlsx")
-pri_gob <- read_excel("01_datos/cap_04/renuncias_aspirantes_gober_1987_2006.xlsx", sheet = "bd", na = "NA")
-efecto_pri <- read_excel("01_datos/cap_04/efecto_renuncias_resultados_pri.xlsx", na = "NA")
-efecto_opo <- read_excel("01_datos/cap_04/efecto_renuncias_resultados_oposicion.xlsx", na = "NA")
+pri <- read_excel("01_datos/cap_03/renuncias_pri_1987_2000.xlsx")
+pri_gob <- read_excel("01_datos/cap_03/renuncias_aspirantes_gober_1987_2006.xlsx", sheet = "bd", na = "NA")
+efecto_pri <- read_excel("01_datos/cap_03/efecto_renuncias_resultados_pri.xlsx", na = "NA")
+efecto_opo <- read_excel("01_datos/cap_03/efecto_renuncias_resultados_oposicion.xlsx", na = "NA")
 
 ### Transformar/preparar datos del dataframe pri ----
 

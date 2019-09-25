@@ -246,7 +246,7 @@ summary(c4.2_m6)
 fun_limpieza <- function(df) {
   
   tidy(df) %>% # Broomear los resultados de cada modelo
-    as_data_frame() %>% 
+    as_tibble() %>% 
     select(-statistic) %>% # Eliminar columna "statistic"
     
     # Transformar estructura de la base de datos
@@ -354,7 +354,7 @@ est_generales <- est_generales %>% left_join(est_c4.2_m5, by = "term")
 est_generales <- est_generales %>% left_join(est_c4.2_m6, by = "term")
 
 # Convertir el data.frame en un tibble 
-est_gral_4.2 <- est_generales %>% as_data_frame()
+est_gral_4.2 <- est_generales %>% as_tibble()
 
 # Unirlo al cuadro 4.2
 cuadro_3.2 <- rbind(cuadro_3.2, est_gral_4.2)
@@ -418,7 +418,7 @@ summary(c4.3_m6)
 fun_limpieza <- function(df) {
   
   tidy(df) %>% # Broomear los resultados de cada modelo
-    as_data_frame() %>% 
+    as_tibble() %>% 
     select(-statistic) %>% # Eliminar columna "statistic"
     
     # Transformar estructura de la base de datos
@@ -523,7 +523,7 @@ est_generales <- est_generales %>% left_join(est_c4.3_m5, by = "term")
 est_generales <- est_generales %>% left_join(est_c4.3_m6, by = "term")
 
 # Convertir el data.frame en un tibble 
-est_gral_4.3 <- est_generales %>% as_data_frame()
+est_gral_4.3 <- est_generales %>% as_tibble()
 
 # Unirlo al cuadro 4.3
 cuadro_3.3 <- rbind(cuadro_3.3, est_gral_4.3)
@@ -564,7 +564,10 @@ median(pri_gob$marg)
 mean(pri_gob$pri.res.l1)
 
 # Genera nuevo data frame con valores fijos para todas las variables excepto pri.pfshr, misma que varía a lo largo de su rango (de 30% a 52%)
-datos_nuevos <- data_frame(ch.gdppc.l1 = rep(median(pri_gob$ch.gdppc.l1), 23), fd.pre.shr = rep(median(pri_gob$fd.pre.shr), 23), marg = rep(median(pri_gob$marg), 23), pri.res.l1 = rep(0, 23), pri.pfshr = seq(30, 52, 1))
+datos_nuevos <- tibble(ch.gdppc.l1 = rep(median(pri_gob$ch.gdppc.l1), 23), 
+                       fd.pre.shr = rep(median(pri_gob$fd.pre.shr), 23), 
+                       marg = rep(median(pri_gob$marg), 23), 
+                       pri.res.l1 = rep(0, 23), pri.pfshr = seq(30, 52, 1))
 
 # Generar valores predichos
 preds <- predict(c4.2_m1, datos_nuevos, type = "link", se.fit = TRUE)
@@ -617,13 +620,16 @@ median(pri_gob$marg)
 mean(pri_gob$pri.res.l1)
 
 # Genera nuevo data frame con valores fijos para todas las variables excepto pri.pfshr, misma que varía a lo largo de su rango (de 30% a 52%)
-datos_nuevos <- data_frame(ch.gdppc.l1 = rep(median(pri_gob$ch.gdppc.l1), 2), fd.pre.shr = rep(median(pri_gob$fd.pre.shr), 2), marg = rep(median(pri_gob$marg), 2), pri.res.l1 = rep(0, 2), reform = c(0, 1))
+datos_nuevos <- tibble(ch.gdppc.l1 = rep(median(pri_gob$ch.gdppc.l1), 2), 
+                       fd.pre.shr = rep(median(pri_gob$fd.pre.shr), 2), 
+                       marg = rep(median(pri_gob$marg), 2), 
+                       pri.res.l1 = rep(0, 2), reform = c(0, 1))
 
 # Generar valores predichos
 preds <- predict(c4.2_m5, datos_nuevos, type = "response")
 
 # Gráfica 
-g_mod_5_4.2 <- data_frame(preds, 
+g_mod_5_4.2 <- tibble(preds, 
                           situacion = c("Antes de\nla reforma", 
                                         "Después de\nla reforma")) %>%
   ggplot(aes(situacion, preds)) +
@@ -654,7 +660,11 @@ median(pri_gob_00$marg)
 mean(pri_gob_00$pri.res.l1)
 
 # Genera nuevo data frame con valores fijos para todas las variables excepto pri.pfshr, misma que varía a lo largo de su rango (de 30% a 52%)
-datos_nuevos <- data_frame(ch.gdppc.l1 = rep(median(pri_gob_00$ch.gdppc.l1), 23), fd.pre.shr = rep(median(pri_gob_00$fd.pre.shr), 23), marg = rep(median(pri_gob_00$marg), 23), pri.res.l1 = rep(0, 23), pri.pfshr = seq(30, 52, 1))
+datos_nuevos <- tibble(ch.gdppc.l1 = rep(median(pri_gob_00$ch.gdppc.l1), 23),
+                       fd.pre.shr = rep(median(pri_gob_00$fd.pre.shr), 23),
+                       marg = rep(median(pri_gob_00$marg), 23), 
+                       pri.res.l1 = rep(0, 23), 
+                       pri.pfshr = seq(30, 52, 1))
 
 # Generar valores predichos
 preds <- predict(c4.3_m1, datos_nuevos, type = "link", se.fit = TRUE)
@@ -711,13 +721,16 @@ median(pri_gob$marg)
 mean(pri_gob$pri.res.l1)
 
 # Genera nuevo data frame con valores fijos para todas las variables excepto pri.pfshr, misma que varía a lo largo de su rango (de 30% a 52%)
-datos_nuevos <- data_frame(ch.gdppc.l1 = rep(median(pri_gob$ch.gdppc.l1), 2), fd.pre.shr = rep(median(pri_gob$fd.pre.shr), 2), marg = rep(median(pri_gob$marg), 2), pri.res.l1 = rep(0, 2), reform = c(0, 1))
+datos_nuevos <- tibble(ch.gdppc.l1 = rep(median(pri_gob$ch.gdppc.l1), 2), 
+                       fd.pre.shr = rep(median(pri_gob$fd.pre.shr), 2), 
+                       marg = rep(median(pri_gob$marg), 2), 
+                       pri.res.l1 = rep(0, 2), reform = c(0, 1))
 
 # Generar valores predichos
 preds <- predict(c4.3_m5, datos_nuevos, type = "response")
 
 # Gráfica 
-g_mod_5_4.3 <- data_frame(preds, 
+g_mod_5_4.3 <- tibble(preds, 
                           situacion = c("Antes de\nla reforma", 
                                         "Después de\nla reforma")) %>%
   ggplot(aes(situacion, preds)) +
