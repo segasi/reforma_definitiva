@@ -9,7 +9,7 @@ source("02_codigo/cap_02/cap_02_cargar_unir_datos.R") # Corre el script 'cap_02_
 
 ### Gráficas y análisis de universo de regímenes de partido dominante ----
 
-### Figura 2.1 ----
+### Gráfica 1.1 ----
 sp %>% 
   group_by(year) %>% 
   summarise(num_anual = sum(gwf.fail)) %>% 
@@ -35,7 +35,7 @@ sp %>%
 ggsave("fig_2.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 ggsave("fig_2.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
-# Análisis asociado a Figura 2.1 ----
+# Análisis asociado a gráfica 1.1 ----
 
 # Número de regímens que terminaron cada año y número acumulado
 sp %>% 
@@ -185,7 +185,7 @@ sp %>%
 
 
 
-### Figura 2.2 ----
+### Gráfica 1.2 ----
 sp %>% 
   group_by(gwf.casename) %>% 
   summarise(duracion = last(gwf.duration), # Variable que registra el último valor de gwf.duration 
@@ -218,7 +218,7 @@ sp %>%
 ggsave("fig_2.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 ggsave("fig_2.2.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
-# Análisis asociado a figura 2.2 ----
+# Análisis asociado a gráfica 1.2 ----
 
 # Duración individual de todos los regímenes considerados
 gwfsp %>% 
@@ -298,9 +298,9 @@ gwfsp %>%
 
 
 
-### Intro sección 2.1.2 ----
+### Intro sección "Desempeño económico" ----
 
-# Datos mencionados en la intro de la sección 2.1.2
+# Datos mencionados en la intro de la sección "Desempeño económico", pp.38-40
 sp %>%
   filter(gwf.casename == "Cameroon 60-83") %>% 
   mutate(prom_mov_siete = rollapply(pwt7.rgdpch.ch, 7, mean, align = "right", fill = NA),
@@ -315,7 +315,7 @@ sp %>%
   select(year, gwf.casename,  pwt7.rgdpch.ch, dif_prom_mov_siete) %>% 
   print(n = nrow(.))
 
-### Figura 2.3  ----
+### Gráfica 1.3  ----
 g1 <- sp %>%
   filter(!str_detect(gwf.casename, "NA")) %>%
   group_by(gwf.casename) %>% 
@@ -453,9 +453,9 @@ g3a <- sp %>%
 
 plot_grid(g1a, g2a, g3a, nrow = 3, ncol = 1, align = 'h')
 
-# Análisis asociado a la figura 2.4 ----
+# Análisis asociado a la gráfica 1.3 ----
 
-## Cálculo del número de regímenes incluidos en cada úno de las gráficas de la figura 2.3 
+## Cálculo del número de regímenes incluidos en cada úno de las gráficas de la gráfica 1.3 
 
 # Gráfica superior, utilizando pwt7.rgdpch.ch
 sp %>%
@@ -672,7 +672,7 @@ sp %>%
   print(n = nrow(.))
 
 
-### Figura 2.4  ----
+### Gráfica 1.4  ----
 # Boxplots del Panel (a) - Cambio en PIB per capita
 g1 <- sp %>%
   group_by(gwf.casename) %>% 
@@ -750,7 +750,7 @@ plot_grid(g1, g2, g3, nrow = 3, ncol = 1, align = 'h')
 ggsave("fig_2.4.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
 ggsave("fig_2.4.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
 
-# Análisis asociado a la figura 2.4 -----
+# Análisis asociado a la gráfica 1.4 ----
 
 # Datos de duración de China, Malasia, Singapur y Vietnam 
 sp %>%
@@ -851,7 +851,7 @@ sp %>% filter(!is.na(mad.devsevenyma),       # Modelos 6 y 9
   distinct(gwf.casename)
 
 
-### Figura 2.6 ----
+### Gráfica 1.6 ----
 
 # Esta gráfica es construida con datos previamente calculados en STATA usando el archivo
 # cap_02_modelos_logit.do, disponible en el folder 02_codigo de este proyecto.
@@ -886,7 +886,7 @@ ggsave("fig_2.6.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300
 ggsave("fig_2.6.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 
-### Análisis de cifras relacionadas con la figura 2.6 ----
+### Análisis de cifras relacionadas con la gráfica 1.6 ----
 
 # Número de observaciones país año en el que el Promedio móvil de cinco años es menor a -3%
 sp %>% 
