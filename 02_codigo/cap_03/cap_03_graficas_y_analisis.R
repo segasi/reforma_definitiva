@@ -48,8 +48,8 @@ pri %>%
         axis.line = element_line(size = 0.5, colour = "#666666"),
         panel.grid.major.y = element_line(linetype = 3, colour = "grey80", size = 0.2))
 
-ggsave("fig_4.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
-ggsave("fig_4.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_3.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_3.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 
 # Análisis asociado a los datos de la Gráfica 3.1 ----
@@ -155,8 +155,8 @@ pri_gob %>%
         legend.text = element_text(size = 12),
         legend.position = c(0.1, 0.92))
 
-ggsave("fig_4.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
-ggsave("fig_4.2.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_3.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_3.2.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 # Número total de procesos de selección con al menos renuncia ----
 pri_gob %>% 
@@ -742,8 +742,8 @@ g_mod_5_4.3 <- data_frame(preds,
 plot_grid(g_mod_1_4.2, g_mod_1_4.3, g_mod_5_4.2, g_mod_5_4.3, nrow = 2)
 
 # Guardar las gráficas
-ggsave("fig_4.3.png", path = "04_graficas", width = 10, height = 8, dpi = 300)
-ggsave("fig_4.3.jpeg", path = "04_graficas", width = 10, height = 8, dpi = 300)
+ggsave("fig_3.3.png", path = "04_graficas", width = 10, height = 8, dpi = 300)
+ggsave("fig_3.3.jpeg", path = "04_graficas", width = 10, height = 8, dpi = 300)
 
 
 ### Gráficas y análisis del efecto de las renuncias de priístas en los resultados electorales de ese partido ----
