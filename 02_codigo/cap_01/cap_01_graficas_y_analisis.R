@@ -857,7 +857,7 @@ sp %>% filter(!is.na(mad.devsevenyma),       # Modelos 6 y 9
 # cap_01_modelos_logit.do, disponible en el folder 02_codigo de este proyecto.
 
 # Cargar datos
-datos <- read_csv("01_datos/cap_01/datos_grafica_2.6.csv")
+datos <- read_csv("01_datos/cap_01/datos_grafica_1.6.csv")
 
 # Hacer la gráfica
 datos %>% 
