@@ -11,7 +11,7 @@ p_load(Amelia, haven, janitor, readxl, stringr,
 # Datos de Geddes, Wright y Franz (GWF) ----
 
 # Cargar base de datos gwf.xlx. Esta base de datos incluye todos los regíemenes incluidos en la base de datos de GWF para el período 1945-2010
-gwf <- read_excel("01_datos/cap_02/gwf.xlsx", 
+gwf <- read_excel("01_datos/cap_01/gwf.xlsx", 
                   col_types = c("skip", "numeric", "numeric", 
                                 "numeric", "text", "text", "text", 
                                 "text", "numeric", "text", "text", 
@@ -53,7 +53,7 @@ gwfsp <- gwfsp %>%
 
 
 ## Datos de Penn World Table (PWT) 7.0 ----
-pwt7.0_original <- read.csv("01_datos/cap_02/PWT_7.0.csv", na.strings="NA", header = TRUE, dec = ".", sep =",")
+pwt7.0_original <- read.csv("01_datos/cap_01/PWT_7.0.csv", na.strings="NA", header = TRUE, dec = ".", sep =",")
 
 # Renombrar países y calcular diversas variables: 1) Valor rezagado de gdppc; 2) cambio anual de gdppc; 3) cambio anual de gdppc rezagado entre 1 y 11 períodos; 4) Desviación del valor anula del cambio del gdppc respecto al promedio de los últimos 5 a 10 años
 pwt7.0 <- pwt7.0_original %>% 
@@ -93,7 +93,7 @@ pwt7.0 <- pwt7.0_original %>%
 
 
 ## Datos de Maddison ----
-mad_original <- read_excel("01_datos/cap_02/Maddison - Eco Indicators 1500-2008.xls", sheet = "PerCapita GDP", range = "A3:GR194")
+mad_original <- read_excel("01_datos/cap_01/Maddison - Eco Indicators 1500-2008.xls", sheet = "PerCapita GDP", range = "A3:GR194")
 
 # Renombrar variable, eliminar columnas vacías, renombrar países y eliminar datos de categorias reguionales incluidas en la base de datos original
 
@@ -156,7 +156,7 @@ mad <- mad %>%
 
 
 ## Datos de precios de gas y petróleo de Ross ----
-ross_original <- read_dta("01_datos/cap_02/Ross Oil & Gas 1932-2009 public.dta")
+ross_original <- read_dta("01_datos/cap_01/Ross Oil & Gas 1932-2009 public.dta")
 
 # Seleccionar variables, renombrar variable y renombrar países
 ross <- ross_original %>% 
@@ -205,10 +205,11 @@ missmap(u3[u3$gwf.country == "South Yemen",], col = c("#c04d50","#4f81bd"), main
 
 ## Guardar data frame u3 como sp para usarla en el análisis y guardar archivo .csv
 sp <- u3
-write_csv(sp, "03_datos_generados/cap_2/sp.csv")
+write_csv(sp, "03_datos_generados/cap_1/sp.csv")
 
 # Generar archivo con terminación .dta para llevar a cabo el análisis de los modelos de supervivencia y Logit Rare Events en STATA (ver código incluido en el mismo folder que este archivo)
 sp_dta <- sp %>% 
   rename_(.dots=setNames(names(.), tolower(gsub("\\.", "_", names(.)))))
 
-write_dta(sp_dta, "03_datos_generados/cap_2/sp.dta", version = 12)
+write_dta(sp_dta, "03_datos_generados/cap_1/sp.dta", version = 12)
+
