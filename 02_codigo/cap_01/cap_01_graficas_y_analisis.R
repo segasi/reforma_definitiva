@@ -4,7 +4,7 @@ p_load(cowplot, flexsurv, readr, readxl, tidyverse,
        stringr, survival, zeligverse)
 
 ### Importar y procesar datos ----
-source("02_codigo/cap_02/cap_02_cargar_unir_datos.R") # Corre el script 'cap_02_cargar_unir_datos.R' (incluido en el mismo folder que este archivo) para importar y transformar los datos
+source("02_codigo/cap_01/cap_01_cargar_unir_datos.R") # Corre el script 'cap_01_cargar_unir_datos.R' (incluido en el mismo folder que este archivo) para importar y transformar los datos
 
 
 ### Gráficas y análisis de universo de regímenes de partido dominante ----
@@ -32,8 +32,8 @@ sp %>%
         axis.title.y = element_text(size = 15, hjust = 1, face = "bold", margin = margin(0, 15, 0, 0)),
         axis.line = element_line(size = 0.5, colour = "#666666"))
 
-ggsave("fig_2.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
-ggsave("fig_2.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_1.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_1.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 # Análisis asociado a gráfica 1.1 ----
 
@@ -215,8 +215,8 @@ sp %>%
         legend.position = "none")
 
 # Guardar gráfica
-ggsave("fig_2.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
-ggsave("fig_2.2.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_1.2.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_1.2.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 # Análisis asociado a gráfica 1.2 ----
 
@@ -385,8 +385,8 @@ g3 <- sp %>%
   
 # Unir gráficas
 plot_grid(g1, g2, g3, nrow = 3, ncol = 1, align = 'h')
-ggsave("fig_2.3.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
-ggsave("fig_2.3.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
+ggsave("fig_1.3.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
+ggsave("fig_1.3.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
 
 ## Misma gráfica pero sin restringir rangos de cada una. Esta segunda versión NO se incluye en el libro
 
@@ -747,8 +747,8 @@ g3 <- sp %>%
 
 # Unir gráficas
 plot_grid(g1, g2, g3, nrow = 3, ncol = 1, align = 'h')
-ggsave("fig_2.4.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
-ggsave("fig_2.4.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
+ggsave("fig_1.4.png", path = "04_graficas", width = 10, height = 12, dpi = 300)
+ggsave("fig_1.4.jpeg", path = "04_graficas", width = 10, height = 12, dpi = 300)
 
 # Análisis asociado a la gráfica 1.4 ----
 
@@ -817,7 +817,7 @@ sp %>%
 
 ### Modelos ----
 
-# Todos los modelos presentados en el capítulo 2 fueron calculados en STATA, usando (i) la base de datos "sp.dta",  generada en R con el script "cap_02_cargar_unir_datos.R"; y (ii) el código que está disponible en los do files "cap_02_modelos_logit.do" y "cap_02_modelos_survival.do", incluidos en el folder "02_codigo" de este proyecto.
+# Todos los modelos presentados en el capítulo 2 fueron calculados en STATA, usando (i) la base de datos "sp.dta",  generada en R con el script "cap_01_cargar_unir_datos.R"; y (ii) el código que está disponible en los do files "cap_01_modelos_logit.do" y "cap_01_modelos_survival.do", incluidos en el folder "02_codigo" de este proyecto.
 
 # En esta sección únicamente calculo el número de regímenes en cada modelo
 
@@ -854,10 +854,10 @@ sp %>% filter(!is.na(mad.devsevenyma),       # Modelos 6 y 9
 ### Gráfica 1.6 ----
 
 # Esta gráfica es construida con datos previamente calculados en STATA usando el archivo
-# cap_02_modelos_logit.do, disponible en el folder 02_codigo de este proyecto.
+# cap_01_modelos_logit.do, disponible en el folder 02_codigo de este proyecto.
 
 # Cargar datos
-datos <- read_csv("01_datos/cap_02/datos_grafica_2.6.csv")
+datos <- read_csv("01_datos/cap_01/datos_grafica_2.6.csv")
 
 # Hacer la gráfica
 datos %>% 
@@ -882,8 +882,8 @@ datos %>%
         axis.line = element_line(size = 0.5, colour = "#666666"),
         legend.position = "none")
 
-ggsave("fig_2.6.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
-ggsave("fig_2.6.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_1.6.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
+ggsave("fig_1.6.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 
 ### Análisis de cifras relacionadas con la gráfica 1.6 ----
