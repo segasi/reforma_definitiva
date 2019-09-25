@@ -205,10 +205,10 @@ missmap(u3[u3$gwf.country == "South Yemen",], col = c("#c04d50","#4f81bd"), main
 
 ## Guardar data frame u3 como sp para usarla en el análisis y guardar archivo .csv
 sp <- u3
-write_csv(sp, "03_datos_generados/sp.csv")
+write_csv(sp, "03_datos_generados/cap_2/sp.csv")
 
 # Generar archivo con terminación .dta para llevar a cabo el análisis de los modelos de supervivencia y Logit Rare Events en STATA (ver código incluido en el mismo folder que este archivo)
 sp_dta <- sp %>% 
   rename_(.dots=setNames(names(.), tolower(gsub("\\.", "_", names(.)))))
 
-write_dta(sp_dta, "03_datos_generados/sp.dta", version = 12)
+write_dta(sp_dta, "03_datos_generados/cap_2/sp.dta", version = 12)
