@@ -98,8 +98,8 @@ mad_original <- read_excel("01_datos/cap_02/Maddison - Eco Indicators 1500-2008.
 # Renombrar variable, eliminar columnas vacías, renombrar países y eliminar datos de categorias reguionales incluidas en la base de datos original
 
 mad <- mad_original %>% 
-  rename(mad.country = X__1) %>% # Renombrar columna del país     
-  select(-c(X__2, X__3, X__4, X__5, X__6)) %>% # Eliminar columnas vacías en la base de datos
+  rename(mad.country = ...1) %>% # Renombrar columna del país     
+  select(-c(...3, ...5, ...7, ...9, ...11)) %>% # Eliminar columnas vacías en la base de datos
   mutate(mad.country = ifelse(mad.country == "Total Former USSR", "USSR", ifelse(mad.country == "Indonesia (including Timor until 1999)", "Indonesia", ifelse(mad.country == "Congo 'Brazzaville'", "Congo-Brz", ifelse(mad.country == "Côte d'Ivoire", "Ivory Coast", ifelse(mad.country == "North Korea", "Korea North", ifelse(mad.country == "Serbia/Montenegro/Kosovo", "Serbia", ifelse(mad.country == "USSR", "Soviet Union", mad.country)))))))) %>%  # Renombrar países
   filter(!mad.country %in% c("15 Latin American countries", "15 West Asian countries", "16 East Asian countries", "30 East Asian countries", "57 African countries", "8 Latin American countries", "Western Europe", "Western Offshoots", "Total 12 Western Europe", "Total 14 small west European countries", "Total 15 Latin American countries", "Total 15 West Asian countries", "Total 16 East Asian countries", "Total 21 small Caribbean countries", "Total 24 Small East Asian countries", "Total 3 Small African countries", "Total 30  Western Europe", "Total 30 East Asian countries", "Total 7 East European countries", "Total 8 Latin American countries", "Total 7 East European Countries",  "Total Africa", "Total Asia", "Successor Republics of USSR", "Total Latin America", "Total Western Offshoots", "Former Czechoslovakia", "Former Yugoslavia")) # Filtrar
 
