@@ -42,3 +42,4 @@ pri_gob_00 <- pri_gob %>%
 
 efecto_pri <- clean_names(efecto_pri) 
 efecto_opo <- clean_names(efecto_opo)
+

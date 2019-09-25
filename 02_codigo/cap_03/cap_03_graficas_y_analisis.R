@@ -22,7 +22,7 @@ pri %>%
   select(periodo, num_renuncias, por, total_renuncias)
 
 
-# Figura 4.1 ----
+# Gráfica 3.1 ----
 pri %>% 
   group_by(año_semestre) %>% 
   summarise(num_renuncias = n()) %>% 
@@ -52,7 +52,7 @@ ggsave("fig_4.1.png", path = "04_graficas", width = 10, height = 6.67, dpi = 300
 ggsave("fig_4.1.jpeg", path = "04_graficas", width = 10, height = 6.67, dpi = 300)
 
 
-# Análisis asociado a los datos de la Figura 4.1 ----
+# Análisis asociado a los datos de la Gráfica 3.1 ----
 
 # Semestres con más de 40 deserciones
 pri %>% 
@@ -103,14 +103,14 @@ pri %>%
   mutate(total = sum(n),
          por = (n/total)*100)
 
-### Heatmap de reuncias por estado ---
+### Heatmap de reuncias por estado (no incluída en el texto---
 pri %>% 
   mutate(state = fct_rev(state)) %>% 
   group_by(año_semestre, state) %>% 
   summarise(num_renuncias = n()) %>% 
   ungroup() %>%   
   ggplot(aes(año_semestre, state)) +
-  geom_tile(aes(fill = num_renuncias), col = "grey60") +
+  geom_tile(aes(fill = log(num_renuncias)), col = "grey60") +
   geom_text(aes(label = num_renuncias), size = 2.5) +
   scale_fill_gradient(low = "white", high = "salmon") +
   labs(x = NULL,
@@ -124,7 +124,7 @@ pri %>%
 
 ### Gráficas y análisis de la frecuencia de renuncias registradas en la base de datos "Deserciones de aspirantes a gobernador del PRI, 1987-2006" ----
 
-# Figura 4.2 ----
+# Gráfica 3.2 ----
 pri_gob %>% 
   group_by(year) %>% 
   summarise(num_renuncias = sum(pri.res),
@@ -206,7 +206,7 @@ pri_gob %>%
 
 
 
-### Modelos del Cuadro 4.2 ----
+### Modelos del Cuadro 3.2 ----
 
 # Modelo 1 - Porcentaje del financiamiento público recibido por el PRI + Crecimiento económico (rezagado) + Resultados electorales previos del PRI + Marginalización + Deserción del PRI rezagada 
 
@@ -288,29 +288,29 @@ mod_5 <- fun_limpieza(c4.2_m5)
 mod_6 <- fun_limpieza(c4.2_m6)
 
 # Juntar todos los modelos
-cuadro_4.2 <- mod_1 %>% 
+cuadro_3.2 <- mod_1 %>% 
   full_join(mod_2, by = c("term", "dimension")) %>% 
   rename(`Modelo 1 (91-06)` = valor.x,
          `Modelo 2 (91-06)` = valor.y) 
 
-cuadro_4.2 <- cuadro_4.2 %>% 
+cuadro_3.2 <- cuadro_3.2 %>% 
   full_join(mod_3, by = c("term", "dimension")) %>% 
   rename(`Modelo 3 (91-06)` = valor)
 
-cuadro_4.2 <- cuadro_4.2 %>% 
+cuadro_3.2 <- cuadro_3.2 %>% 
   full_join(mod_4, by = c("term", "dimension")) %>% 
   rename(`Modelo 4 (91-06)` = valor)
 
-cuadro_4.2 <- cuadro_4.2 %>% 
+cuadro_3.2 <- cuadro_3.2 %>% 
   full_join(mod_5, by = c("term", "dimension")) %>% 
   rename(`Modelo 5 (87-06)` = valor)
 
-cuadro_4.2 <- cuadro_4.2 %>% 
+cuadro_3.2 <- cuadro_3.2 %>% 
   full_join(mod_6, by = c("term", "dimension")) %>% 
   rename(`Modelo 6 (87-06)` = valor) 
 
 # Eliminar variables regionales
-cuadro_4.2 <- cuadro_4.2 %>% 
+cuadro_3.2 <- cuadro_3.2 %>% 
   filter(!term %in% c("bajio", "center", "north")) %>% 
   select(-dimension)
 
@@ -357,10 +357,10 @@ est_generales <- est_generales %>% left_join(est_c4.2_m6, by = "term")
 est_gral_4.2 <- est_generales %>% as_data_frame()
 
 # Unirlo al cuadro 4.2
-cuadro_4.2 <- rbind(cuadro_4.2, est_gral_4.2)
+cuadro_3.2 <- rbind(cuadro_3.2, est_gral_4.2)
 
 # Ordenar términos
-cuadro_4.2 <- cuadro_4.2 %>% 
+cuadro_3.2 <- cuadro_3.2 %>% 
   mutate(term = fct_relevel(term, "Porcentaje del financiamiento público recibido por el PRI", 
                             "Margen del financiamiento público recibido por el PRI", 
                             "Reforma electoral de 1996", 
@@ -375,7 +375,7 @@ cuadro_4.2 <- cuadro_4.2 %>%
   arrange(term)
 
 # Guardar cuadro como archivo .xlsx
-write_xlsx(cuadro_4.2, path = "03_datos_generados/cap_4_tabla_4.2.xlsx", col_names = TRUE)
+write_xlsx(cuadro_3.2, path = "03_datos_generados/cap_3/cap_3_tabla_3.2.xlsx", col_names = TRUE)
 
 
 ### Modelos del Cuadro 4.3 ----
@@ -458,29 +458,29 @@ mod_5 <- fun_limpieza(c4.3_m5)
 mod_6 <- fun_limpieza(c4.3_m6)
 
 # Juntar todos los modelos
-cuadro_4.3 <- mod_1 %>% 
+cuadro_3.3 <- mod_1 %>% 
   full_join(mod_2, by = c("term", "dimension")) %>% 
   rename(`Modelo 1 (91-00)` = valor.x,
          `Modelo 2 (91-00)` = valor.y) 
 
-cuadro_4.3 <- cuadro_4.3 %>% 
+cuadro_3.3 <- cuadro_3.3 %>% 
   full_join(mod_3, by = c("term", "dimension")) %>% 
   rename(`Modelo 3 (91-00)` = valor)
 
-cuadro_4.3 <- cuadro_4.3 %>% 
+cuadro_3.3 <- cuadro_3.3 %>% 
   full_join(mod_4, by = c("term", "dimension")) %>% 
   rename(`Modelo 4 (91-00)` = valor)
 
-cuadro_4.3 <- cuadro_4.3 %>% 
+cuadro_3.3 <- cuadro_3.3 %>% 
   full_join(mod_5, by = c("term", "dimension")) %>% 
   rename(`Modelo 5 (87-00)` = valor)
 
-cuadro_4.3 <- cuadro_4.3 %>% 
+cuadro_3.3 <- cuadro_3.3 %>% 
   full_join(mod_6, by = c("term", "dimension")) %>% 
   rename(`Modelo 6 (87-00)` = valor) 
 
 # Eliminar variables regionales
-cuadro_4.3 <- cuadro_4.3 %>% 
+cuadro_3.3 <- cuadro_3.3 %>% 
   filter(!term %in% c("bajio", "center", "north")) %>% 
   select(-dimension)
 
@@ -526,10 +526,10 @@ est_generales <- est_generales %>% left_join(est_c4.3_m6, by = "term")
 est_gral_4.3 <- est_generales %>% as_data_frame()
 
 # Unirlo al cuadro 4.3
-cuadro_4.3 <- rbind(cuadro_4.3, est_gral_4.3)
+cuadro_3.3 <- rbind(cuadro_3.3, est_gral_4.3)
 
 # Ordenar términos
-cuadro_4.3 <- cuadro_4.3 %>% 
+cuadro_3.3 <- cuadro_3.3 %>% 
   mutate(term = fct_relevel(term, "Porcentaje del financiamiento público recibido por el PRI", 
                             "Margen del financiamiento público recibido por el PRI", 
                             "Reforma electoral de 1996", 
@@ -545,12 +545,12 @@ cuadro_4.3 <- cuadro_4.3 %>%
 
 
 # Guardar cuadro como archivo .xlsx
-write_xlsx(cuadro_4.3, path = "03_datos_generados/cap_4_tabla_4.3.xlsx", col_names = TRUE)
+write_xlsx(cuadro_3.3, path = "03_datos_generados/cap_3/cap_3_tabla_3.3.xlsx", col_names = TRUE)
 
 
 
 
-### Figura 4.3: gráficas de los modelos 1 y 5 de los cuadros 4.2 y 4.3 ----
+### Gráfica 3.3: gráficas de los modelos 1 y 5 de los cuadros 4.2 y 4.3 ----
 
 # Nota: Buena parte del código de esta sección se basa en esta hilo en Stack Overflow: https://stackoverflow.com/questions/14423325/confidence-intervals-for-predictions-from-logistic-regression
 
